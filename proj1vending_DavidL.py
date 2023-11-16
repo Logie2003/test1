@@ -16,8 +16,6 @@
 #
 # Asynchronous Window With Periodic Update
 # https://pysimplegui.readthedocs.io/en/latest/cookbook/#asynchronous-window-with-periodic-update
-
-
 import PySimpleGUI as sg
 from gpiozero import Button, Servo
 
@@ -38,7 +36,7 @@ def log(s):
 
 
 class VendingMachine(object):
-    PRODUCTS = {"SURPRISE": 5, "POP": 10, "CHIP": 25, "CHOC": 100, "BEER": 200}
+    PRODUCTS = {"Surpise 5¢": 5, "Pop 10¢": 10, "Chips 25¢ ": 25, "Chocolate $1": 100, "Beer $2": 200}
 
     COINS = {"5¢": 5, "10¢": 10, "25¢": 25, "$1": 100, "$2": 200}
 
@@ -205,15 +203,20 @@ if __name__ == "__main__":
         servo_activated = False
 
         def hardware_button_pressed():
-            vending.event = 'RETURN'
-            vending.update()
+            vending.amount = 0  # Reset the total amount to 0
+            window["total_inserted"].update('Total Inserted: $0.00')
             window["RETURN"].update(disabled=False)
+            activate_servo()
+            
+            
+            
+
+            
 
             activate_servo()
             
         def activate_servo():
-            global servo_activated
-            if not servo_activated:
+           
         # Rotate the servo motor to a specific angle (adjust as needed)
                 servo.value = 0.5  # This is just an example angle, adjust based on your servo specifications
         # Wait for the servo to reach the desired position (adjust delay if needed)
@@ -221,6 +224,10 @@ if __name__ == "__main__":
         # Return the servo to the initial position
                 servo.value = 0.0
                 servo.detach()
+                vending.amount = 0
+                window["total_inserted"].update('Total Inserted: $0.00')
+                window["RETURN"].update(disabled=False)
+
         # Set up the callback
         key1.when_pressed = hardware_button_pressed
 
@@ -235,3 +242,4 @@ if __name__ == "__main__":
 
     window.close()
     print("Normal exit")
+
