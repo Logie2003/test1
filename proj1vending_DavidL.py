@@ -118,6 +118,7 @@ class AddCoinsState(State):
         if machine.event == "RETURN":
             machine.go_to_state('count_change')
             window["total_inserted"].update('Total Inserted: $0.00')
+            machine.amount = 0
         elif machine.event in machine.COINS:
             machine.add_coin(machine.event)
             window["total_inserted"].update(f'Total Inserted: ${machine.amount / 100:.2f}')
@@ -226,3 +227,4 @@ if __name__ == "__main__":
 
     window.close()
     print("Normal exit")
+
