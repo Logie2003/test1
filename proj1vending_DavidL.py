@@ -18,10 +18,16 @@
 # https://pysimplegui.readthedocs.io/en/latest/cookbook/#asynchronous-window-with-periodic-update
 import PySimpleGUI as sg
 from gpiozero import Button, Servo
+from time import sleep
 
 hardware_present = False
 
 try:
+    from gpiozero import Button, Servo
+    button_pin = 5
+    servo_pin = 17
+    key1 = Button(button_pin)
+    servo = Servo(servo_pin)
     # *** define the pin you used
     hardware_present = True
 except ModuleNotFoundError:
@@ -103,6 +109,8 @@ class WaitingState(State):
             window["total_inserted"].update(f'Total Inserted: ${machine.amount / 100:.2f}')
 
 
+
+
 class AddCoinsState(State):
     _NAME = "add_coins"
 
@@ -128,13 +136,18 @@ class DeliverProductState(State):
             machine.change_due = machine.amount - machine.PRODUCTS[machine.event]
             machine.amount = 0
             print(f"Dispensing {machine.event}...")
-
-            if machine.change_due > 0:
-                machine.go_to_state('count_change')
-            else:
-                machine.go_to_state('waiting')
+            servo.min()
+            sleep(0.5)
+            servo.max()
+       
+        
+           
+        if machine.change_due > 0:
+            machine.go_to_state('count_change')
         else:
-            sg.popup_error("Insufficient funds. Please add more coins.")
+            machine.go_to_state('waiting')
+        #else:
+            #sg.popup_error("Insufficient funds. Please add more coins.")
 
     def on_exit(self, machine):
         window["total_inserted"].update('Total Inserted: $0.00')
@@ -179,57 +192,28 @@ if __name__ == "__main__":
         row = [button]
         select_col.append(row)
 
-    layout = [[sg.Column(coin_col, vertical_alignment="TOP"),
-               sg.VSeparator(),
-               sg.Column(select_col, vertical_alignment="TOP")]]
+    layout = [[sg.Column(coin_col, vertical_alignment="TOP"), sg.VSeparator(), sg.Column(select_col, vertical_alignment="TOP")]]
     layout.append([sg.Text("Total Inserted:", font=("Helvetica", 18)), sg.Text("", key="total_inserted", font=("Helvetica", 18))])
     layout.append([sg.Button("RETURN", font=("Helvetica", 12), key="RETURN", disabled=True)])
     window = sg.Window('Vending Machine', layout)
 
-    vending = VendingMachine()
 
+    # Set up the callback
+    
+    vending = VendingMachine()
+    key1.when_pressed = vending.button_action
     vending.add_state(WaitingState())
     vending.add_state(AddCoinsState())
     vending.add_state(DeliverProductState())
     vending.add_state(CountChangeState())
     vending.go_to_state('waiting')
 
+
+
     if hardware_present:
-        button_pin = 5
-        servo_pin = 17
-        key1 = Button(button_pin)
-        servo = Servo(servo_pin)
         
-        servo_activated = False
-
-        def hardware_button_pressed():
-            vending.amount = 0  # Reset the total amount to 0
-            window["total_inserted"].update('Total Inserted: $0.00')
-            window["RETURN"].update(disabled=False)
-            activate_servo()
-            
-            
-            
-
-            
-
-            activate_servo()
-            
-        def activate_servo():
-           
-        # Rotate the servo motor to a specific angle (adjust as needed)
-                servo.value = 0.5  # This is just an example angle, adjust based on your servo specifications
-        # Wait for the servo to reach the desired position (adjust delay if needed)
-                time.sleep(3)
-        # Return the servo to the initial position
-                servo.value = 0.0
-                servo.detach()
-                vending.amount = 0
-                window["total_inserted"].update('Total Inserted: $0.00')
-                window["RETURN"].update(disabled=False)
-
         # Set up the callback
-        key1.when_pressed = hardware_button_pressed
+        key1.when_pressed = vending.button_action
 
     while True:
         event, values = window.read(timeout=10)
@@ -242,4 +226,3 @@ if __name__ == "__main__":
 
     window.close()
     print("Normal exit")
-
