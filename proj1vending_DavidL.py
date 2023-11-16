@@ -1,5 +1,23 @@
 #!/usr/bin/env python3
 
+# STUDENT version for Project 1.
+# TPRG2131 Fall 202x
+# Updated Phil J (Fall 202x)
+# 
+# David Logan
+# Oct 20, 2023 - initial version
+# Nov 15, 2023 - Updated for Fall 2023.
+# 
+
+# PySimpleGUI recipes used:
+#
+# Persistent GUI example
+# https://pysimplegui.readthedocs.io/en/latest/cookbook/#recipe-pattern-2a-persistent-window-multiple-reads-using-an-event-loop
+#
+# Asynchronous Window With Periodic Update
+# https://pysimplegui.readthedocs.io/en/latest/cookbook/#asynchronous-window-with-periodic-update
+
+
 import PySimpleGUI as sg
 from gpiozero import Button, Servo
 
