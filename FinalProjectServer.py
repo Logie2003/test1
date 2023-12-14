@@ -12,19 +12,16 @@ def get_sensor_data():
         cpu_temp = subprocess.check_output(['cat', '/sys/class/thermal/thermal_zone0/temp']).decode('utf-8').strip()
         voltage = subprocess.check_output(['vcgencmd', 'measure_volts']).decode('utf-8').strip()
         gpu_core_speed = subprocess.check_output(['vcgencmd', 'measure_clock', 'core']).decode('utf-8').strip()
-        hdmi_clock = subprocess.check_output(['vcgencmd', 'measure_clock', 'hdmi']).decode('utf-8').strip()
-        pixel_values = "123, 456, 789"  # Replace with actual pixel values retrieval logic
-        h264_block = subprocess.check_output(['vcgencmd', 'measure_clock', 'h264']).decode('utf-8').strip()
+              
 
         return {
             "Core Temperature": core_temp,
             "GPU Temperature": gpu_temp,
             "CPU Temperature": f"{float(cpu_temp) / 1000:.2f}",  # Convert to degrees Celsius
             "Voltage": voltage,
-            "GPU Core Speed": gpu_core_speed,
-            "HDMI Clock": hdmi_clock,
-            "Pixel Values": pixel_values,
-            "H264 block": h264_block,
+            "GPU Core Speed": gpu_core_speed, 
+            
+           
         }
     except Exception as e:
         print(f"Error getting sensor data: {e}")  
@@ -52,7 +49,7 @@ def send_data(client):
 # Set up the socket server
 server = socket.socket()
 host = '192.168.0.124'  # Use the actual IP of the Raspberry Pi
-port = 5030
+port = 5031
 
 server.bind((host, port))
 server.listen()

@@ -13,7 +13,7 @@ if platform.system().lower() == 'windows':
 CIRCLE = '●'  # Unicode symbol 9899 for ON
 CIRCLE_OUTLINE = '○'  # Unicode symbol 9898 for OFF
 
-def update_gui(json_data, window_main, window_separate): 
+def update_gui(json_data, window_main, window_separate):  
     try:
         formatted_data = [
             f"Core Temperature: {json_data['Core Temperature']}",
@@ -21,19 +21,18 @@ def update_gui(json_data, window_main, window_separate):
             f"CPU Temperature: {json_data['CPU Temperature']}",
             f"Voltage: {json_data['Voltage']}",
             f"GPU Core Speed: {json_data['GPU Core Speed']}",
-            f"HDMI Clock: {json_data['HDMI Clock']}",
-            f"Pixel Values: {json_data['Pixel Values']}",
-            f"H264 block: {json_data['H264 block']}",
+           
+           
             f"Iteration Count: {json_data['iteration_count']}",
         ]
         window_main['-DATA-'].update('\n'.join(formatted_data))
        
         # Update LED in the main window
-        window_main['-LED-'].update(CIRCLE if json_data['LED_status'] else CIRCLE_OUTLINE, text_color='green')
+        window_main['-LED-'].update(CIRCLE if json_data['LED_status'] else CIRCLE_OUTLINE, text_color='red')
        
         # Update Iteration Count and Blinking Light in the separate window
         window_separate['-ITERATION_COUNT-'].update(str(json_data['iteration_count']))
-        window_separate['-LED-'].update(CIRCLE if json_data['LED_status'] else CIRCLE_OUTLINE, text_color='green')
+        window_separate['-LED-'].update(CIRCLE if json_data['LED_status'] else CIRCLE_OUTLINE, text_color='red')
     except KeyError as e:
         formatted_data = [f"Error: Key {e} not found in JSON data"]
         window_main['-DATA-'].update('\n'.join(formatted_data))
@@ -50,13 +49,13 @@ def receive_data(client, window_main, window_separate, exit_program):
             update_gui(json_data, window_main, window_separate)
             interval_counter += 1
         except Exception as e:
-            print(f"Error receiving data: {e}")
+            print(f"Error receiving data: {e}") 
             break
 
 # Set up the socket client
 client = socket.socket()
 host = '192.168.0.124'  # Use localhost or the actual IP of the Raspberry Pi
-port = 5030
+port = 5031
 
 # Define the PySimpleGUI layout for the main window
 layout_main = [
